@@ -1,6 +1,7 @@
 # Logs
 .idea
 logs
+.idea
 *.log
 npm-debug.log*
 
