@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="./bootstrap.css"/>
+</head>
+<body>
+    <form action="" class="form-horizontal container">
+        <div class="form-group">
+            <label for="username" class="control-label">用户名</label>
+            <input type="text" id="username" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="password" class="control-label">密码</label>
+            <input type="text" id="password" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-success">提交</button>
+        </div>
+    </form>
+    <div class="container">
+        <ul class="list-group">
+            <li class="list-group-item">用户名：yql 密码：yqlyql
+                <button class="btn btn-danger pull-right btn-xs">删除</button>
+            </li>
+        </ul>
+    </div>
+    <script>
+        //删除
+        function delUser(userid){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST",'/delUser',true);
+            xhr.responseType = "json"; //设置响应类型
+            xhr.onload = function(){
+                showList(xhr.response);
+            };
+            xhr.send(JSON.stringify({id:userid}));
+        }
+
+        //注册
+        var oBtn = document.querySelector(".btn");
+        oBtn.addEventListener("click",function(){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST",'/addUser',true);
+            xhr.responseType = "json"; //设置响应类型
+            xhr.onload = function(){
+                showList(xhr.response);
+            };
+            xhr.send(JSON.stringify({name:username.value,password:password.value}));
+        });
+
+        //展示列表
+        var oUl = document.querySelector(".list-group");
+
+        //显示列表
+        function showList(data){
+            var str = "";
+            data.forEach(function(user){
+                str += `<li class="list-group-item">用户名：${user.name} 密码：${user.password}
+                        <button class="btn btn-danger pull-right btn-xs" onclick="delUser(${user.id})">删除</button>
+                    </li>`
+            });
+            oUl.innerHTML = str;
+        }
+
+        //创建
+        var xhr = new XMLHttpRequest();
+        //开启请求
+        xhr.open('GET','/getUsers',true);
+        xhr.responseType = "json"; //设置响应类型
+        xhr.onload = function(){ //xhr.readyState == 4 && xhr.status == 200
+            showList(xhr.response)
+        };
+        xhr.send();
+
+    </script>
+</body>
+</html>
