@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bootstrap.css">
+</head>
+<body>
+<form class="form-horizontal container">
+    <div class="form-group">
+        <label for="username" class="control-label">用户名</label>
+        <input type="text" id="username" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="password" class="control-label">密码</label>
+        <input type="text" id="password" class="form-control">
+
+    </div>
+    <div class="form-group">
+        <button id="submit" type="button" class="btn btn-success ">提交</button>
+        <button style="display: none" id="change" type="button" class="btn btn-success ">提交修改</button>
+    </div>
+</form>
+<div class="container" id="content">
+    <ul class="list-group">
+        <!-- <li class="list-group-item">用户名：zf 密码：zfe
+             <button class="btn btn-success btn-xs">修改</button>
+             <button class="btn btn-danger pull-right btn-xs">删除</button>
+         </li>-->
+
+    </ul>
+</div>
+<script>
+    //获取全部信息，并绑定到页面上
+    var oUl = document.querySelector('.list-group');
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/getUsers', true);
+    xhr.responseType = 'json';
+    xhr.onload = function () {
+        showList(xhr.response);
+    };
+    xhr.send();
+
+    //    增加信息
+    var oBtn = document.querySelector('.btn');
+    oBtn.onclick = function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/addUser', true);
+        xhr.responseType = 'json';
+        xhr.onload = function () {
+            showList(xhr.response);
+        }
+        xhr.send(JSON.stringify({username: username.value, password: password.value}));
+    };
+
+
+    //    修改和删除指定信息（委托给共同的父级）
+    var oDiv = document.querySelector('#content');
+    var btn = document.querySelector('#submit');
+    var delBtn = document.querySelector('#change');
+    var n = null;
+    document.onclick = function (e) {
+        e = e || window.event;
+        if (e.target.innerHTML == '删除') {//告诉后台删除当前行，重新绑定页面
+            n = e.target.getAttribute('data-id');
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', '/deleteUser?id=' + n, true);
+            xhr.responseType = 'json';
+            xhr.onload = function () {
+                showList(xhr.response);
+            };
+            xhr.send();
+        }
+        if (e.target.innerHTML == '修改') {
+            n = e.target.getAttribute('data-id');
+            var xhr = new XMLHttpRequest();
+            xhr.open('get', '/curUser?id=' + n, true);
+            xhr.responseType = 'json';
+            xhr.onload = function () {
+                var data = xhr.response;
+                username.value = data.username;
+                password.value = data.password;
+                btn.style.display = 'none';
+                delBtn.style.display = 'block';
+            };
+            xhr.send();
+
+
+        }
+        if (e.target.innerHTML == '提交修改') {
+            var xhr = new XMLHttpRequest();
+            console.log(n)
+            xhr.open('POST', '/changeUser?id=' + n, true);
+            xhr.responseType = 'json';
+            xhr.onload = function () {
+                showList(xhr.response);
+                btn.style.display = 'block';
+                delBtn.style.display = 'none';
+                username.value = null;
+                password.value = null;
+            };
+            xhr.send(JSON.stringify({username: username.value, password: password.value}));
+        }
+
+    };
+
+
+    // 绑定数据到页面
+    function showList(data) {
+        var str = '';
+        data.forEach(function (item, index) {
+            str += ` <li class="list-group-item">用户名：${item.username} 密码：${item.password}
+                     <button data-id=${item.id} class="btn btn-danger pull-right btn-xs" style="margin-left:5px">删除</button>
+                    <button data-id=${item.id} class="btn btn-success pull-right btn-xs">修改</button>
+                    </li>`
+        });
+        oUl.innerHTML = str;
+    }
+</script>
+</body>
+</html>

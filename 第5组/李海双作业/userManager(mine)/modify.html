@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bootstrap.css">
+</head>
+<body>
+<div class="container">
+        <ul class="list-group">
+
+        </ul>
+</div>
+<script>
+    var list=document.querySelector('.list-group');
+    var id=queryParse(window.location.href).id;
+    function queryParse(str) {
+        var obj={};
+        var reg=/([^=?#&]+)=([^=?#&]+)/g;
+        str.replace(reg, function ($0,$1,$2) {
+           obj[$1]=$2;
+        });
+        //console.log(reg.exec(str));
+      return obj;
+    };
+    show();
+
+    function modify() {
+        var btn=document.querySelector('.btn');
+        var id=btn.id;
+        btn.onclick= function () {
+            var xhr=new XMLHttpRequest();
+            xhr.responseType='json';
+            xhr.open('post','/modify?id='+id,true);
+            xhr.onload= function () {
+               // showMessage(JSON.parse(xhr.response));
+               // console.log(xhr.response);
+                show();
+            };
+            xhr.send(JSON.stringify({name:username.value,password:password.value,id:id}));
+        }
+    }
+    function show() {
+        var xhr=new XMLHttpRequest();
+        xhr.responseType='json';
+        xhr.open('get','/getOne?id='+id,true);
+        xhr.onload= function () {
+            showMessage(xhr.response);
+            modify();
+        };
+        xhr.send();
+    }
+    function showMessage(data) {
+        var str='';
+        str+=`
+            <li class="list-group-item">姓名：<input type="text" value=${data.name} id="username"></li>
+            <li class="list-group-item">密码：<input type="text" value=${data.password} id="password"></li>
+            <li><button type="button" class="btn btn-primary" id=${data.id}>修改</button></li>
+                `;
+        list.innerHTML=str;
+        console.log(username.value,password.value);
+    }
+</script>
+</body>
+</html>

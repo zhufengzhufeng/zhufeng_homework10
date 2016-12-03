@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="./bootstrap.css">
+</head>
+<body>
+<form action="" class="form-horizontal container">
+    <div class="form-group">
+        <label for="username" class="control-label">用户名</label>
+        <input type="text" id="username" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="password" class="control-label">密码</label>
+        <input type="text" id="password" class="form-control">
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-success">提交</button>
+    </div>
+</form>
+<div class="container">
+    <ul class="list-group">
+
+    </ul>
+</div>
+<script>
+    //创建xmlHTTPRequest
+    //console.log(ulList);
+    var ulList=document.querySelector('.list-group'),
+        btns=null;
+
+    var xhr=new XMLHttpRequest();
+    //开启请求
+    xhr.open('get','/getUsers',true);
+    xhr.responseType='json';//把json 变成obj
+    xhr.onload= function () {
+        //xhr.readyState==4,xhr.status=200
+        showList(xhr.response);
+        deleteItem();
+        modify();
+    };
+    xhr.send();
+    //开始渲染页面
+
+    /*添加用户开始*/
+    var btn=document.querySelector('.btn');
+    btn.addEventListener('click',function(){
+        //获取页面数据提交到指定路径
+        var xhr=new XMLHttpRequest();
+        //开启请求
+        xhr.responseType='json';//把json 变成obj
+        xhr.open('post','/addUser',true);
+        xhr.onload= function () {
+            showList(xhr.response);
+            deleteItem();
+            modify()
+        };
+        xhr.send(JSON.stringify({name:username.value,password:password.value}));
+    }) ;
+    /*添加用户结束*/
+//    删除用户开始,删除的时候把id传过去
+    function deleteItem(){
+        btns=document.querySelectorAll('.btn-danger');
+        [].forEach.call(btns, function (item,index) {
+            item.onclick=function () {
+                var xhr=new XMLHttpRequest();
+                var id=this.id;
+                console.log(id);
+                xhr.responseType='json';//把json 变成obj
+                xhr.open('get','/delete?id='+id,true);
+                xhr.onload= function () {
+                    showList(xhr.response);
+                    deleteItem();
+                };
+                xhr.send();
+            }
+        });
+    }
+//    删除用户结束
+    //修改用户开始
+    function modify() {
+        btns=document.querySelectorAll('.btn-primary');
+        [].forEach.call(btns, function (item) {
+            var id=item.id;
+            item.onclick= function () {
+                /*var xhr=new XMLHttpRequest();
+                xhr.responseType='json';
+                xhr.open('get','/getOne?id='+id,true);
+                xhr.onload= function () {*/
+                  //刷新网页；
+                   window.open('modify.html?id='+id);
+               /* };
+                xhr.send();*/
+            }
+        })
+    }
+    //修改用户结束
+    //渲染方法
+    function  showList(data) {
+        var str='';
+        data.forEach(function (item) {
+            str+=`
+        <li class="list-group-item ">用户名： ${item.name}     密码：${item.password}
+
+            <button type="button" class="btn btn-danger pull-right btn-xs " id=${item.id}>删除</button>
+            <button type="button" class="btn btn-primary pull-right btn-xs " id=${item.id}>修改</button>
+        </li>
+`
+        });
+        ulList.innerHTML=str;
+    }
+</script>
+</body>
+</html>
