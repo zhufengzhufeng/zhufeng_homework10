@@ -1,0 +1,23 @@
+{
+  "name": "zhufeng_homework10",
+  "version": "1.0.0",
+  "description": "第10期的作业仓库",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhaohaixing/zhufeng_homework10.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhaohaixing/zhufeng_homework10/issues"
+  },
+  "homepage": "https://github.com/zhaohaixing/zhufeng_homework10#readme",
+  "dependencies": {
+    "mime": "^1.3.4"
+  }
+}
